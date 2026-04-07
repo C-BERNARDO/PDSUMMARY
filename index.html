@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDC Summary — Campaign Report Consolidator</title>
+  <link rel="stylesheet" href="main.css" />
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-brand">
+      <div class="header-logo">📊</div>
+      <span class="header-title">PDC Summary</span>
+      <span class="header-subtitle">Campaign Report Consolidator</span>
+    </div>
+    <div class="header-actions">
+      <button class="ant-btn ant-btn-default" onclick="window.location.href='main.html'">
+        <span class="ant-btn-icon">←</span> Back to Menu
+      </button>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="app-content">
+    <div class="layout-grid">
+
+      <!-- Sidebar -->
+      <aside class="layout-sidebar">
+
+        <!-- Upload card -->
+        <div class="ant-card">
+          <div class="ant-card-head">
+            <span class="ant-card-head-title">Upload Files</span>
+          </div>
+          <div class="ant-card-body">
+            <div class="ant-upload-dragger" id="dropArea">
+              <input type="file" id="fileInput" multiple accept=".xls,.xlsx" />
+              <span class="ant-upload-drag-icon">📂</span>
+              <p class="ant-upload-text">Click or drag files here</p>
+              <p class="ant-upload-hint">Supports .xls and .xlsx campaign summary files</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- File list -->
+        <div id="fileListWrapper" class="ant-upload-list" style="display:none;">
+          <div class="ant-upload-list-header">
+            <span>Selected Files</span>
+            <span id="fileCount" class="ant-badge-count">0</span>
+          </div>
+          <div id="fileListItems" class="ant-upload-list-items"></div>
+        </div>
+
+        <!-- Actions -->
+        <div class="ant-space-vertical">
+          <button id="processBtn" class="ant-btn ant-btn-primary ant-btn-lg ant-btn-block" disabled>
+            <span class="ant-btn-icon">▶</span> Process Files
+          </button>
+          <button id="clearBtn" class="ant-btn ant-btn-danger ant-btn-block">
+            <span class="ant-btn-icon">🗑</span> Clear All
+          </button>
+        </div>
+
+        <!-- Status alert -->
+        <div id="status" class="ant-alert hidden"></div>
+
+      </aside>
+
+      <!-- Results panel -->
+      <section id="results">
+        <!-- Empty state shown before any processing -->
+        <div class="ant-card">
+          <div class="ant-card-body">
+            <div class="ant-empty">
+              <div class="ant-empty-image">📋</div>
+              <div class="ant-empty-description">
+                Upload one or more Excel campaign summary files and click <strong>Process Files</strong> to generate the consolidated report.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="main.js"></script>
+</body>
+</html>

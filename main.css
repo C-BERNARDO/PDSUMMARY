@@ -1,0 +1,558 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ── Ant Design Vue token layer ── */
+:root {
+  --ant-primary:          #1677ff;
+  --ant-primary-hover:    #4096ff;
+  --ant-primary-active:   #0958d9;
+  --ant-primary-bg:       #e6f4ff;
+  --ant-primary-border:   #91caff;
+
+  --ant-success:          #52c41a;
+  --ant-success-bg:       #f6ffed;
+  --ant-success-border:   #b7eb8f;
+
+  --ant-error:            #ff4d4f;
+  --ant-error-bg:         #fff2f0;
+  --ant-error-border:     #ffccc7;
+
+  --ant-warning:          #faad14;
+  --ant-warning-bg:       #fffbe6;
+  --ant-warning-border:   #ffe58f;
+
+  --ant-text:             rgba(0,0,0,.88);
+  --ant-text-secondary:   rgba(0,0,0,.45);
+  --ant-text-tertiary:    rgba(0,0,0,.25);
+  --ant-border:           #d9d9d9;
+  --ant-border-secondary: #f0f0f0;
+  --ant-fill:             rgba(0,0,0,.04);
+  --ant-fill-secondary:   rgba(0,0,0,.06);
+
+  --ant-bg:               #ffffff;
+  --ant-bg-layout:        #f5f5f5;
+  --ant-bg-container:     #ffffff;
+  --ant-bg-elevated:      #ffffff;
+
+  --ant-radius-sm:        4px;
+  --ant-radius:           6px;
+  --ant-radius-lg:        8px;
+  --ant-radius-xl:        12px;
+
+  --ant-shadow-sm:        0 1px 2px 0 rgba(0,0,0,.03), 0 1px 6px -1px rgba(0,0,0,.02), 0 2px 4px 0 rgba(0,0,0,.02);
+  --ant-shadow:           0 1px 2px -2px rgba(0,0,0,.16), 0 3px 6px 0 rgba(0,0,0,.12), 0 5px 12px 4px rgba(0,0,0,.09);
+  --ant-shadow-lg:        0 6px 16px 0 rgba(0,0,0,.08), 0 3px 6px -4px rgba(0,0,0,.12), 0 9px 28px 8px rgba(0,0,0,.05);
+
+  --font-main:            'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono:            'JetBrains Mono', monospace;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-main);
+  font-size: 14px;
+  line-height: 1.5714;
+  color: var(--ant-text);
+  background: var(--ant-bg-layout);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ── */
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.app-header {
+  background: var(--ant-bg);
+  border-bottom: 1px solid var(--ant-border-secondary);
+  padding: 0 32px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--ant-shadow-sm);
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-logo {
+  width: 32px;
+  height: 32px;
+  background: var(--ant-primary);
+  border-radius: var(--ant-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.header-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ant-text);
+  white-space: nowrap;
+}
+
+.header-subtitle {
+  font-size: 12px;
+  color: var(--ant-text-secondary);
+  border-left: 1px solid var(--ant-border);
+  padding-left: 12px;
+  margin-left: 4px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Content area */
+.app-content {
+  flex: 1;
+  padding: 24px;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ── Ant Cards ── */
+.ant-card {
+  background: var(--ant-bg-container);
+  border: 1px solid var(--ant-border-secondary);
+  border-radius: var(--ant-radius-lg);
+  box-shadow: var(--ant-shadow-sm);
+  overflow: hidden;
+}
+
+.ant-card-head {
+  padding: 0 20px;
+  min-height: 48px;
+  border-bottom: 1px solid var(--ant-border-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ant-bg-container);
+}
+
+.ant-card-head-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ant-text);
+  padding: 12px 0;
+}
+
+.ant-card-extra {
+  font-size: 13px;
+  color: var(--ant-text-secondary);
+}
+
+.ant-card-body {
+  padding: 20px;
+}
+
+/* ── Buttons ── */
+.ant-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px 15px;
+  height: 32px;
+  font-size: 14px;
+  font-family: var(--font-main);
+  font-weight: 400;
+  border-radius: var(--ant-radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all .2s cubic-bezier(.645,.045,.355,1);
+  white-space: nowrap;
+  outline: none;
+  position: relative;
+  user-select: none;
+  text-decoration: none;
+}
+
+.ant-btn-default {
+  background: var(--ant-bg);
+  color: var(--ant-text);
+  border-color: var(--ant-border);
+}
+.ant-btn-default:hover { color: var(--ant-primary); border-color: var(--ant-primary); }
+
+.ant-btn-primary {
+  background: var(--ant-primary);
+  color: #fff;
+  border-color: var(--ant-primary);
+  box-shadow: 0 2px 0 rgba(5,145,255,.1);
+}
+.ant-btn-primary:hover:not(:disabled) { background: var(--ant-primary-hover); border-color: var(--ant-primary-hover); }
+.ant-btn-primary:active:not(:disabled) { background: var(--ant-primary-active); border-color: var(--ant-primary-active); }
+.ant-btn-primary:disabled { background: var(--ant-fill); color: var(--ant-text-tertiary); border-color: var(--ant-border); box-shadow: none; cursor: not-allowed; }
+
+.ant-btn-danger {
+  background: var(--ant-bg);
+  color: var(--ant-error);
+  border-color: var(--ant-error);
+}
+.ant-btn-danger:hover { background: var(--ant-error-bg); }
+
+.ant-btn-lg {
+  height: 40px;
+  padding: 6px 20px;
+  font-size: 15px;
+  border-radius: var(--ant-radius);
+}
+
+.ant-btn-block {
+  width: 100%;
+  display: flex;
+}
+
+.ant-btn-icon { font-size: 15px; line-height: 1; }
+
+/* ── Upload Dragger ── */
+.ant-upload-dragger {
+  background: var(--ant-bg-container);
+  border: 1.5px dashed var(--ant-border);
+  border-radius: var(--ant-radius-lg);
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .3s, background .3s;
+  position: relative;
+}
+
+.ant-upload-dragger:hover,
+.ant-upload-dragger.drag-over {
+  border-color: var(--ant-primary);
+  background: var(--ant-primary-bg);
+}
+
+.ant-upload-dragger input[type="file"] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+
+.ant-upload-drag-icon {
+  font-size: 48px;
+  color: var(--ant-primary);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.ant-upload-text {
+  font-size: 16px;
+  color: var(--ant-text);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.ant-upload-hint {
+  font-size: 13px;
+  color: var(--ant-text-secondary);
+}
+
+/* ── File List ── */
+.ant-upload-list {
+  border: 1px solid var(--ant-border-secondary);
+  border-radius: var(--ant-radius-lg);
+  overflow: hidden;
+  background: var(--ant-bg-container);
+}
+
+.ant-upload-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--ant-fill);
+  border-bottom: 1px solid var(--ant-border-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ant-text);
+}
+
+.ant-badge-count {
+  background: var(--ant-primary);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 0 7px;
+  height: 18px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.ant-upload-list-items {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.ant-upload-list-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--ant-border-secondary);
+  font-size: 13px;
+  color: var(--ant-text);
+  transition: background .15s;
+}
+
+.ant-upload-list-item:last-child { border-bottom: none; }
+.ant-upload-list-item:hover { background: var(--ant-fill); }
+
+.ant-upload-list-item-icon { color: var(--ant-primary); font-size: 15px; flex-shrink: 0; }
+
+.ant-upload-list-item-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 400;
+}
+
+.ant-upload-list-item-remove {
+  background: transparent;
+  border: none;
+  color: var(--ant-text-tertiary);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--ant-radius-sm);
+  font-size: 14px;
+  transition: all .2s;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+.ant-upload-list-item-remove:hover { background: var(--ant-error-bg); color: var(--ant-error); }
+
+/* ── Alert / Status ── */
+.ant-alert {
+  border-radius: var(--ant-radius);
+  padding: 10px 14px;
+  font-size: 13px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border: 1px solid;
+}
+.ant-alert-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+.ant-alert-message { font-weight: 500; }
+
+.ant-alert-info    { background: var(--ant-primary-bg); border-color: var(--ant-primary-border); color: #0958d9; }
+.ant-alert-success { background: var(--ant-success-bg); border-color: var(--ant-success-border); color: #389e0d; }
+.ant-alert-error   { background: var(--ant-error-bg);   border-color: var(--ant-error-border);   color: #cf1322; }
+.ant-alert-warning { background: var(--ant-warning-bg); border-color: var(--ant-warning-border); color: #d48806; }
+
+.ant-alert.hidden { display: none; }
+
+/* Spinning icon */
+@keyframes spin { to { transform: rotate(360deg); } }
+.ant-loading-icon { display: inline-block; animation: spin .8s linear infinite; }
+
+/* ── Table ── */
+.ant-table-wrapper {
+  border-radius: var(--ant-radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--ant-border-secondary);
+  background: var(--ant-bg-container);
+}
+
+.ant-table-wrapper-inner {
+  overflow-x: auto;
+}
+
+.ant-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-family: var(--font-main);
+}
+
+.ant-table thead tr th {
+  background: var(--ant-fill);
+  color: var(--ant-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--ant-border-secondary);
+  white-space: nowrap;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.ant-table tbody tr td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--ant-border-secondary);
+  color: var(--ant-text);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.ant-table tbody tr:last-child td { border-bottom: none; }
+.ant-table tbody tr:hover td { background: var(--ant-primary-bg); }
+
+.ant-table tbody tr td:first-child {
+  font-weight: 600;
+  color: var(--ant-text);
+}
+
+/* Numeric column alignment */
+.ant-table tbody tr td.num,
+.ant-table thead tr th.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+/* Table footer */
+.ant-table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--ant-fill);
+  border-top: 1px solid var(--ant-border-secondary);
+  font-size: 12px;
+  color: var(--ant-text-secondary);
+}
+
+/* ── Divider ── */
+.ant-divider {
+  border: none;
+  border-top: 1px solid var(--ant-border-secondary);
+  margin: 16px 0;
+}
+
+/* ── Space / Stack ── */
+.ant-space-vertical { display: flex; flex-direction: column; gap: 12px; }
+.ant-space-horizontal { display: flex; align-items: center; gap: 8px; }
+
+/* ── Typography ── */
+.ant-typography-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ant-text);
+  margin-bottom: 4px;
+}
+.ant-typography-secondary { color: var(--ant-text-secondary); font-size: 13px; }
+
+/* ── Tag ── */
+.ant-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  padding: 1px 8px;
+  border-radius: var(--ant-radius-sm);
+  border: 1px solid;
+  font-weight: 500;
+  line-height: 20px;
+}
+.ant-tag-blue { background: var(--ant-primary-bg); color: var(--ant-primary); border-color: var(--ant-primary-border); }
+.ant-tag-green { background: var(--ant-success-bg); color: var(--ant-success); border-color: var(--ant-success-border); }
+
+/* ── Layout grid ── */
+.layout-grid {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.layout-sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+/* ── Statistic ── */
+.ant-statistic {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ant-statistic-title { font-size: 12px; color: var(--ant-text-secondary); }
+.ant-statistic-content { font-size: 22px; font-weight: 600; color: var(--ant-text); font-variant-numeric: tabular-nums; }
+
+/* ── Stats row ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: var(--ant-fill);
+  border-radius: var(--ant-radius);
+  padding: 14px 16px;
+}
+
+/* ── Summary / tfoot row ── */
+.ant-table tfoot tr.summary-row td {
+  background: #e6f4ff;
+  border-top: 2px solid var(--ant-primary-border);
+  border-bottom: none;
+  font-weight: 700;
+  color: var(--ant-primary-active);
+  padding: 11px 16px;
+  white-space: nowrap;
+}
+
+.ant-table tfoot tr.summary-row td.summary-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--ant-primary);
+}
+
+.ant-table tfoot tr.summary-row td.summary-cell {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-align: right;
+}
+
+/* ── Empty state */
+.ant-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--ant-text-secondary);
+}
+.ant-empty-image { font-size: 48px; margin-bottom: 8px; opacity: .35; }
+.ant-empty-description { font-size: 13px; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--ant-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #b0b0b0; }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .layout-grid { grid-template-columns: 1fr; }
+  .header-subtitle { display: none; }
+}
+
+@media (max-width: 768px) {
+  .app-content { padding: 16px; }
+  .app-header { padding: 0 16px; }
+  .header-title { font-size: 14px; }
+  .stats-row { grid-template-columns: 1fr; }
+}
