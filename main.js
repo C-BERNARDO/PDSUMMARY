@@ -10,6 +10,7 @@ const fileListWrapper = document.getElementById("fileListWrapper")
 const fileCountBadge  = document.getElementById("fileCount")
 const statusEl        = document.getElementById("status")
 const results         = document.getElementById("results")
+const topbarMeta      = document.getElementById("topbar-meta")
 const dropArea        = document.getElementById("dropArea")
 
 // ── Drag & drop ──
@@ -43,7 +44,20 @@ clearBtn.addEventListener("click", () => {
   fileListItems.innerHTML = ""
   fileListWrapper.style.display = "none"
   hideStatus()
-  results.innerHTML = ""
+  topbarMeta.innerHTML = ""
+  results.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg viewBox="0 0 80 80" fill="none">
+          <circle cx="40" cy="40" r="38" stroke="#e2e8f0" stroke-width="2"/>
+          <rect x="24" y="28" width="32" height="4" rx="2" fill="#cbd5e0"/>
+          <rect x="24" y="38" width="24" height="4" rx="2" fill="#e2e8f0"/>
+          <rect x="24" y="48" width="28" height="4" rx="2" fill="#e2e8f0"/>
+        </svg>
+      </div>
+      <h3 class="empty-title">No report generated yet</h3>
+      <p class="empty-desc">Upload one or more Excel campaign summary files from the left panel, then click <strong>Process Files</strong> to generate the consolidated performance report.</p>
+    </div>`
   syncProcessBtn()
 })
 
@@ -62,10 +76,12 @@ function displayFileList() {
   fileListWrapper.style.display = "block"
   fileCountBadge.textContent = selectedFiles.length
   fileListItems.innerHTML = selectedFiles.map((f, i) => `
-    <div class="ant-upload-list-item">
-      <span class="ant-upload-list-item-icon">📄</span>
-      <span class="ant-upload-list-item-name" title="${escHtml(f.name)}">${escHtml(f.name)}</span>
-      <button class="ant-upload-list-item-remove" onclick="removeFile(${i})" title="Remove">✕</button>
+    <div class="file-item">
+      <svg class="file-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      </svg>
+      <span class="file-item-name" title="${escHtml(f.name)}">${escHtml(f.name)}</span>
+      <button class="file-item-remove" onclick="removeFile(${i})" title="Remove">✕</button>
     </div>
   `).join("")
 }
@@ -80,27 +96,26 @@ function removeFile(index) {
 }
 
 function escHtml(str) {
-  return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")
+  return String(str)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;")
 }
 
 function showStatus(message, type = "info") {
-  const icons = { info: "⟳", success: "✓", error: "✕", warning: "⚠" }
-  const spinClass = type === "info" ? " ant-loading-icon" : ""
-  statusEl.className = `ant-alert ant-alert-${type === "processing" ? "info" : type}`
+  const map = { info: ["⟳", "spin"], success: ["✓",""], error: ["✕",""], warning: ["⚠",""] }
+  const t = type === "processing" ? "info" : type
+  const [icon, cls] = map[t] || ["ℹ",""]
+  statusEl.className = `status-alert ${t}`
   statusEl.innerHTML = `
-    <span class="ant-alert-icon${spinClass}">${icons[type === "processing" ? "info" : type] || "ℹ"}</span>
-    <span class="ant-alert-message">${escHtml(message)}</span>
+    <span class="status-icon ${cls}">${icon}</span>
+    <span>${escHtml(message)}</span>
   `
-  statusEl.classList.remove("hidden")
-
-  if (window._stTimeout) clearTimeout(window._stTimeout)
-  if (type !== "processing" && type !== "info") {
-    window._stTimeout = setTimeout(() => hideStatus(), 4000)
-  }
+  if (window._stT) clearTimeout(window._stT)
+  if (t !== "info") window._stT = setTimeout(() => hideStatus(), 4500)
 }
 
 function hideStatus() {
-  statusEl.classList.add("hidden")
+  statusEl.className = "status-alert hidden"
 }
 
 // ── Time helpers ──
@@ -114,16 +129,22 @@ function parseTime(t) {
 }
 
 function fmtTime(s) {
+  s = Math.max(0, Math.round(s))
   const h = Math.floor(s / 3600)
   const m = Math.floor((s % 3600) / 60)
-  const sec = Math.floor(s % 60)
+  const sec = s % 60
   return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(sec).padStart(2,"0")}`
+}
+
+function fmtPct(n) {
+  return isFinite(n) ? n.toFixed(2) + "%" : "—"
 }
 
 // ── Core processing ──
 async function processFiles() {
   showStatus("Processing files…", "processing")
   results.innerHTML = ""
+  topbarMeta.innerHTML = ""
 
   try {
     const allData = []
@@ -132,7 +153,6 @@ async function processFiles() {
       const rows = await readExcelFile(file)
       allData.push(...rows)
     }
-
     if (!allData.length) { showStatus("No data found in the uploaded files.", "error"); return }
 
     const consolidated = consolidateData(allData)
@@ -152,9 +172,9 @@ function readExcelFile(file) {
     const reader = new FileReader()
     reader.onload = e => {
       try {
-        const wb = window.XLSX.read(new Uint8Array(e.target.result), { type: "array", cellDates: false, cellText: false })
+        const wb = window.XLSX.read(new Uint8Array(e.target.result), { type:"array", cellDates:false, cellText:false })
         const ws = wb.Sheets[wb.SheetNames[0]]
-        resolve(window.XLSX.utils.sheet_to_json(ws, { defval: "", raw: true, dateNF: "HH:MM:SS" }))
+        resolve(window.XLSX.utils.sheet_to_json(ws, { defval:"", raw:true, dateNF:"HH:MM:SS" }))
       } catch (err) { reject(err) }
     }
     reader.onerror = () => reject(new Error(`Failed to read: ${file.name}`))
@@ -186,9 +206,9 @@ function consolidateData(allData) {
       }
       const rk = Object.keys(row)
       for (const k of keys) {
-        const lk = k.toLowerCase().replace(/\s/g, "")
+        const lk = k.toLowerCase().replace(/\s/g,"")
         for (const rkey of rk) {
-          const lrkey = rkey.toLowerCase().replace(/\s/g, "")
+          const lrkey = rkey.toLowerCase().replace(/\s/g,"")
           if (lrkey.includes(lk) || lk.includes(lrkey)) {
             if (row[rkey] !== undefined && row[rkey] !== null && row[rkey] !== "") return row[rkey]
           }
@@ -206,16 +226,29 @@ function consolidateData(allData) {
     consolidated[name]["Pause Count"]  += parseInt(get("Pause Count","PauseCount","pause count","Pauses")) || 0
   })
 
+  // Format — keep raw seconds for avg/occ calculations before formatting
   Object.values(consolidated).forEach(d => {
     const tc = d["Total Calls"]
-    d["AVG Talk Time"]  = fmtTime(tc > 0 ? d["Talk Time"]  / tc : 0)
-    d["AVG Wait Time"]  = fmtTime(tc > 0 ? d["Wait Time"]  / tc : 0)
-    d["AVG Write Time"] = fmtTime(tc > 0 ? d["Write Time"] / tc : 0)
+    // Averages (raw seconds)
+    d["_avg_talk"]  = tc > 0 ? d["Talk Time"]  / tc : 0
+    d["_avg_wait"]  = tc > 0 ? d["Wait Time"]  / tc : 0
+    d["_avg_write"] = tc > 0 ? d["Write Time"] / tc : 0
+
+    // Occupancy Rate = (Talk Time + Write Time) / Spent Time
+    d["_occ"] = d["Spent Time"] > 0
+      ? ((d["Talk Time"] + d["Write Time"]) / d["Spent Time"]) * 100
+      : null
+
+    // Format times
+    d["AVG Talk Time"]  = fmtTime(d["_avg_talk"])
+    d["AVG Wait Time"]  = fmtTime(d["_avg_wait"])
+    d["AVG Write Time"] = fmtTime(d["_avg_write"])
     d["Spent Time"]  = fmtTime(d["Spent Time"])
     d["Talk Time"]   = fmtTime(d["Talk Time"])
     d["Wait Time"]   = fmtTime(d["Wait Time"])
     d["Write Time"]  = fmtTime(d["Write Time"])
     d["Pause Time"]  = fmtTime(d["Pause Time"])
+    d["Occ Rate"]    = d["_occ"] !== null ? fmtPct(d["_occ"]) : "—"
   })
 
   return consolidated
@@ -224,96 +257,123 @@ function consolidateData(allData) {
 // ── Render results ──
 function displayResults(consolidated) {
   const names = Object.keys(consolidated).sort()
-
   if (!names.length) {
-    results.innerHTML = `
-      <div class="ant-card">
-        <div class="ant-card-body">
-          <div class="ant-empty">
-            <div class="ant-empty-image">📭</div>
-            <div class="ant-empty-description">No collector data found</div>
-          </div>
-        </div>
-      </div>`
+    results.innerHTML = `<div class="empty-state"><div class="empty-title">No data found</div></div>`
     return
   }
 
   const cols = [
-    { key: "Total Calls",    label: "Total Calls",  num: true, type: "int"  },
-    { key: "Spent Time",     label: "Spent Time",   num: true, type: "time" },
-    { key: "Talk Time",      label: "Talk Time",    num: true, type: "time" },
-    { key: "AVG Talk Time",  label: "Avg Talk",     num: true, type: "avg"  },
-    { key: "Wait Time",      label: "Wait Time",    num: true, type: "time" },
-    { key: "AVG Wait Time",  label: "Avg Wait",     num: true, type: "avg"  },
-    { key: "Write Time",     label: "Write Time",   num: true, type: "time" },
-    { key: "AVG Write Time", label: "Avg Write",    num: true, type: "avg"  },
-    { key: "Pause Time",     label: "Pause Time",   num: true, type: "time" },
-    { key: "Pause Count",    label: "Pause Count",  num: true, type: "int"  },
+    { key: "Total Calls",    label: "Total Calls",   type: "int"  },
+    { key: "Spent Time",     label: "Spent Time",    type: "time" },
+    { key: "Talk Time",      label: "Talk Time",     type: "time" },
+    { key: "AVG Talk Time",  label: "Avg Talk",      type: "avg", srcKey: "Talk Time"  },
+    { key: "Wait Time",      label: "Wait Time",     type: "time" },
+    { key: "AVG Wait Time",  label: "Avg Wait",      type: "avg", srcKey: "Wait Time"  },
+    { key: "Write Time",     label: "Write Time",    type: "time" },
+    { key: "AVG Write Time", label: "Avg Write",     type: "avg", srcKey: "Write Time" },
+    { key: "Pause Time",     label: "Pause Time",    type: "time" },
+    { key: "Pause Count",    label: "Pause Count",   type: "int"  },
   ]
 
-  // ── Build summary row values ──
+  // ── Grand Total ──
   const totals = {}
-  let grandTotalCalls = 0
+  let grandCalls = 0
 
   cols.forEach(col => {
     if (col.type === "int") {
-      totals[col.key] = names.reduce((sum, n) => sum + (consolidated[n][col.key] || 0), 0)
-      if (col.key === "Total Calls") grandTotalCalls = totals[col.key]
+      totals[col.key] = names.reduce((s, n) => s + (consolidated[n][col.key] || 0), 0)
+      if (col.key === "Total Calls") grandCalls = totals[col.key]
     } else if (col.type === "time") {
-      // Parse formatted strings back to seconds and sum
-      const secs = names.reduce((sum, n) => sum + parseTime(consolidated[n][col.key] || "00:00:00"), 0)
+      const secs = names.reduce((s, n) => s + parseTime(consolidated[n][col.key] || "00:00:00"), 0)
       totals[col.key] = fmtTime(secs)
+      totals[col.key + "_secs"] = secs   // keep raw for occ
     } else if (col.type === "avg") {
-      // Weighted average: sum of (avg * calls) / total calls
-      const totalSecs = names.reduce((sum, n) => {
-        const tc = consolidated[n]["Total Calls"] || 0
-        return sum + parseTime(consolidated[n][col.key] || "00:00:00") * tc
+      const totalSecs = names.reduce((s, n) => {
+        return s + parseTime(consolidated[n][col.key] || "00:00:00") * (consolidated[n]["Total Calls"] || 0)
       }, 0)
-      totals[col.key] = grandTotalCalls > 0 ? fmtTime(totalSecs / grandTotalCalls) : "00:00:00"
+      totals[col.key] = grandCalls > 0 ? fmtTime(totalSecs / grandCalls) : "00:00:00"
     }
   })
 
+  // ── Grand Occupancy Rate = (Talk Time + Write Time) / Spent Time ──
+  const grandSpentSecs = totals["Spent Time_secs"] || 0
+  const grandTalkSecs  = totals["Talk Time_secs"]  || 0
+  const grandWriteSecs = totals["Write Time_secs"] || 0
+  const grandOcc = grandSpentSecs > 0
+    ? ((grandTalkSecs + grandWriteSecs) / grandSpentSecs) * 100
+    : null
+  const grandOccStr = grandOcc !== null ? fmtPct(grandOcc) : "—"
+
+  // ── Topbar meta ──
+  topbarMeta.innerHTML = `
+    <span class="tag tag-blue">${names.length} Collector${names.length !== 1 ? "s" : ""}</span>
+    <span class="tag tag-green">${grandCalls.toLocaleString()} Calls</span>
+    <span class="tag tag-purple">OCC ${grandOccStr}</span>
+    <span class="tag tag-amber">${processedTime}</span>
+  `
+
+  // ── Build table HTML ──
+  const thCols = cols.map(c => `<th class="r">${c.label}</th>`).join("")
+  const totalCells = cols.map(c => `<th class="r">${totals[c.key] ?? ""}</th>`).join("")
+
+  const rows = names.map(name => {
+    const d = consolidated[name]
+    return `<tr>
+      <td>${escHtml(name)}</td>
+      ${cols.map(c => `<td class="r">${d[c.key] ?? ""}</td>`).join("")}
+      <td class="r">${d["Occ Rate"] ?? "—"}</td>
+    </tr>`
+  }).join("")
+
   results.innerHTML = `
-    <div class="ant-card">
-      <div class="ant-card-head">
-        <span class="ant-card-head-title">Consolidated Report</span>
-        <span class="ant-card-extra">
-          <span class="ant-tag ant-tag-blue">${names.length} Collectors</span>
-          &nbsp;
-          <span class="ant-tag ant-tag-green">${grandTotalCalls.toLocaleString()} Total Calls</span>
-        </span>
+    <div class="report-card">
+      <div class="report-card-head">
+        <span class="report-card-title">Performance Report</span>
+        <div class="report-card-tags">
+          <span class="tag tag-blue">${names.length} Collector${names.length !== 1 ? "s" : ""}</span>
+          <span class="tag tag-green">${grandCalls.toLocaleString()} Total Calls</span>
+          <span class="tag tag-purple">OCC ${grandOccStr}</span>
+        </div>
       </div>
-      <div class="ant-table-wrapper">
-        <div class="ant-table-wrapper-inner">
-          <table class="ant-table">
-            <thead>
-              <tr>
-                <th>Collector</th>
-                ${cols.map(c => `<th class="${c.num ? "num" : ""}">${c.label}</th>`).join("")}
-              </tr>
-            </thead>
-            <tbody>
-              ${names.map(name => {
-                const d = consolidated[name]
-                return `
-                  <tr>
-                    <td>${escHtml(name)}</td>
-                    ${cols.map(c => `<td class="${c.num ? "num" : ""}">${d[c.key] ?? ""}</td>`).join("")}
-                  </tr>`
+
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead>
+            <!-- Occupancy Rate row -->
+            <tr class="occ-row">
+              <th>Occupancy Rate</th>
+              ${cols.map(c => {
+                if (c.key === "Spent Time")  return `<th class="r">${totals["Spent Time"]}</th>`
+                if (c.key === "Talk Time")   return `<th class="r">${totals["Talk Time"]}</th>`
+                if (c.key === "Write Time")  return `<th class="r">${totals["Write Time"]}</th>`
+                return `<th class="r">—</th>`
               }).join("")}
-            </tbody>
-            <tfoot>
-              <tr class="summary-row">
-                <td class="summary-label">Grand Total</td>
-                ${cols.map(c => `<td class="num summary-cell">${totals[c.key] ?? ""}</td>`).join("")}
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-        <div class="ant-table-footer">
-          <span>Showing ${names.length} record${names.length !== 1 ? "s" : ""}</span>
-          <span>Generated on ${processedTime}</span>
-        </div>
+              <th class="r" style="font-size:14px;">${grandOccStr}</th>
+            </tr>
+
+            <!-- Grand Total row -->
+            <tr class="total-row">
+              <th>Grand Total</th>
+              ${totalCells}
+              <th class="r">—</th>
+            </tr>
+
+            <!-- Column header row -->
+            <tr class="col-header">
+              <th>Collector</th>
+              ${thCols}
+              <th class="r">Occ. Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-foot">
+        <span>${names.length} record${names.length !== 1 ? "s" : ""} · Occupancy Rate = (Talk Time + Write Time) ÷ Spent Time</span>
+        <span>Generated ${processedTime}</span>
       </div>
     </div>
   `

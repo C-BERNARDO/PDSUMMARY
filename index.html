@@ -8,79 +8,103 @@
 </head>
 <body>
 
-<div class="app-layout">
+<div class="app-shell">
 
-  <!-- Header -->
-  <header class="app-header">
-    <div class="header-brand">
-      <div class="header-logo">📊</div>
-      <span class="header-title">PD Summary</span>
-      <span class="header-subtitle">Campaign Report</span>
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+
+    <!-- Brand -->
+    <div class="sidebar-brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">PD Summary</span>
+        <span class="brand-sub">Report Consolidator</span>
+      </div>
     </div>
-  </header>
 
-  <!-- Main content -->
-  <main class="app-content">
-    <div class="layout-grid">
+    <div class="sidebar-divider"></div>
 
-      <!-- Sidebar -->
-      <aside class="layout-sidebar">
-
-        <!-- Upload card -->
-        <div class="ant-card">
-          <div class="ant-card-head">
-            <span class="ant-card-head-title">Upload Files</span>
-          </div>
-          <div class="ant-card-body">
-            <div class="ant-upload-dragger" id="dropArea">
-              <input type="file" id="fileInput" multiple accept=".xls,.xlsx" />
-              <span class="ant-upload-drag-icon">📂</span>
-              <p class="ant-upload-text">Click or drag files here</p>
-              <p class="ant-upload-hint">Supports .xls and .xlsx campaign summary files</p>
-            </div>
-          </div>
+    <!-- Upload zone -->
+    <div class="sidebar-section">
+      <p class="section-label">Data Source</p>
+      <div class="drop-zone" id="dropArea">
+        <input type="file" id="fileInput" multiple accept=".xls,.xlsx" />
+        <div class="drop-zone-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M16 12l-4-4m0 0l-4 4m4-4v12"/>
+          </svg>
         </div>
-
-        <!-- File list -->
-        <div id="fileListWrapper" class="ant-upload-list" style="display:none;">
-          <div class="ant-upload-list-header">
-            <span>Selected Files</span>
-            <span id="fileCount" class="ant-badge-count">0</span>
-          </div>
-          <div id="fileListItems" class="ant-upload-list-items"></div>
-        </div>
-
-        <!-- Actions -->
-        <div class="ant-space-vertical">
-          <button id="processBtn" class="ant-btn ant-btn-primary ant-btn-lg ant-btn-block" disabled>
-            <span class="ant-btn-icon">▶</span> Process Files
-          </button>
-          <button id="clearBtn" class="ant-btn ant-btn-danger ant-btn-block">
-            <span class="ant-btn-icon">🗑</span> Clear All
-          </button>
-        </div>
-
-        <!-- Status alert -->
-        <div id="status" class="ant-alert hidden"></div>
-
-      </aside>
-
-      <!-- Results panel -->
-      <section id="results">
-        <!-- Empty state shown before any processing -->
-        <div class="ant-card">
-          <div class="ant-card-body">
-            <div class="ant-empty">
-              <div class="ant-empty-image">📋</div>
-              <div class="ant-empty-description">
-                Upload one or more Excel campaign summary files and click <strong>Process Files</strong> to generate the consolidated report.
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
+        <p class="drop-zone-text">Drop Excel files here</p>
+        <p class="drop-zone-hint">or click to browse &middot; .xls / .xlsx</p>
+      </div>
     </div>
+
+    <!-- File list -->
+    <div id="fileListWrapper" class="file-queue" style="display:none;">
+      <div class="file-queue-header">
+        <span class="file-queue-label">Queue</span>
+        <span id="fileCount" class="file-queue-badge">0</span>
+      </div>
+      <div id="fileListItems" class="file-queue-items"></div>
+    </div>
+
+    <!-- Spacer pushes actions to bottom -->
+    <div class="sidebar-spacer"></div>
+
+    <!-- Status -->
+    <div id="status" class="status-alert hidden"></div>
+
+    <!-- Actions -->
+    <div class="sidebar-actions">
+      <button id="processBtn" class="btn btn-primary" disabled>
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Process Files
+      </button>
+      <button id="clearBtn" class="btn btn-ghost">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        Clear All
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- ══ MAIN PANEL ══ -->
+  <main class="main-panel">
+
+    <!-- Top bar -->
+    <div class="topbar">
+      <div class="topbar-title">
+        <span class="topbar-heading">Consolidated Report</span>
+      </div>
+      <div id="topbar-meta" class="topbar-meta"></div>
+    </div>
+
+    <!-- Scrollable results area -->
+    <div class="results-scroll">
+      <div id="results" class="results-area">
+
+        <!-- Empty state -->
+        <div class="empty-state">
+          <div class="empty-icon">
+            <svg viewBox="0 0 80 80" fill="none">
+              <circle cx="40" cy="40" r="38" stroke="#e2e8f0" stroke-width="2"/>
+              <rect x="24" y="28" width="32" height="4" rx="2" fill="#cbd5e0"/>
+              <rect x="24" y="38" width="24" height="4" rx="2" fill="#e2e8f0"/>
+              <rect x="24" y="48" width="28" height="4" rx="2" fill="#e2e8f0"/>
+            </svg>
+          </div>
+          <h3 class="empty-title">No report generated yet</h3>
+          <p class="empty-desc">Upload one or more Excel Predictive Campaign Summary files from the left panel, then click <strong>Process Files</strong> to generate the consolidated performance report.</p>
+        </div>
+
+      </div>
+    </div>
+
   </main>
 
 </div>
