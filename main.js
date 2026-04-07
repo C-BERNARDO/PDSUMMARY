@@ -10,7 +10,6 @@ const fileListWrapper = document.getElementById("fileListWrapper")
 const fileCountBadge  = document.getElementById("fileCount")
 const statusEl        = document.getElementById("status")
 const results         = document.getElementById("results")
-const topbarMeta      = document.getElementById("topbar-meta")
 const dropArea        = document.getElementById("dropArea")
 
 // ── Drag & drop ──
@@ -44,7 +43,6 @@ clearBtn.addEventListener("click", () => {
   fileListItems.innerHTML = ""
   fileListWrapper.style.display = "none"
   hideStatus()
-  topbarMeta.innerHTML = ""
   results.innerHTML = `
     <div class="empty-state">
       <div class="empty-icon">
@@ -144,7 +142,6 @@ function fmtPct(n) {
 async function processFiles() {
   showStatus("Processing files…", "processing")
   results.innerHTML = ""
-  topbarMeta.innerHTML = ""
 
   try {
     const allData = []
@@ -304,14 +301,6 @@ function displayResults(consolidated) {
     : null
   const grandOccStr = grandOcc !== null ? fmtPct(grandOcc) : "—"
 
-  // ── Topbar meta ──
-  topbarMeta.innerHTML = `
-    <span class="tag tag-blue">${names.length} Collector${names.length !== 1 ? "s" : ""}</span>
-    <span class="tag tag-green">${grandCalls.toLocaleString()} Calls</span>
-    <span class="tag tag-purple">OCC ${grandOccStr}</span>
-    <span class="tag tag-amber">${processedTime}</span>
-  `
-
   // ── Build table HTML ──
   const thCols = cols.map(c => `<th class="r">${c.label}</th>`).join("")
   const totalCells = cols.map(c => `<th class="r">${totals[c.key] ?? ""}</th>`).join("")
@@ -321,7 +310,6 @@ function displayResults(consolidated) {
     return `<tr>
       <td>${escHtml(name)}</td>
       ${cols.map(c => `<td class="r">${d[c.key] ?? ""}</td>`).join("")}
-      <td class="r">${d["Occ Rate"] ?? "—"}</td>
     </tr>`
   }).join("")
 
@@ -331,7 +319,6 @@ function displayResults(consolidated) {
         <span class="report-card-title">Performance Report</span>
         <div class="report-card-tags">
           <span class="tag tag-blue">${names.length} Collector${names.length !== 1 ? "s" : ""}</span>
-          <span class="tag tag-green">${grandCalls.toLocaleString()} Total Calls</span>
           <span class="tag tag-purple">OCC ${grandOccStr}</span>
         </div>
       </div>
@@ -339,30 +326,16 @@ function displayResults(consolidated) {
       <div class="table-scroll">
         <table class="data-table">
           <thead>
-            <!-- Occupancy Rate row -->
-            <tr class="occ-row">
-              <th>Occupancy Rate</th>
-              ${cols.map(c => {
-                if (c.key === "Spent Time")  return `<th class="r">${totals["Spent Time"]}</th>`
-                if (c.key === "Talk Time")   return `<th class="r">${totals["Talk Time"]}</th>`
-                if (c.key === "Write Time")  return `<th class="r">${totals["Write Time"]}</th>`
-                return `<th class="r">—</th>`
-              }).join("")}
-              <th class="r" style="font-size:14px;">${grandOccStr}</th>
-            </tr>
-
             <!-- Grand Total row -->
             <tr class="total-row">
               <th>Grand Total</th>
               ${totalCells}
-              <th class="r">—</th>
             </tr>
 
             <!-- Column header row -->
             <tr class="col-header">
               <th>Collector</th>
               ${thCols}
-              <th class="r">Occ. Rate</th>
             </tr>
           </thead>
           <tbody>

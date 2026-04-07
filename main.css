@@ -435,50 +435,6 @@ body {
   background: var(--bg);
 }
 
-/* Topbar */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 28px;
-  height: 62px;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  box-shadow: var(--shadow-xs);
-  flex-shrink: 0;
-  gap: 16px;
-}
-
-.topbar-title {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  min-width: 0;
-}
-
-.topbar-heading {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--gray-900);
-  letter-spacing: -.01em;
-  white-space: nowrap;
-}
-
-.topbar-sub {
-  font-size: 12px;
-  color: var(--gray-400);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.topbar-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
 /* Tags */
 .tag {
   display: inline-flex;
@@ -501,7 +457,8 @@ body {
 .results-scroll {
   flex: 1;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
+  min-height: 0;
 }
 
 .results-area {
@@ -611,7 +568,7 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-sm);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .report-card-head {
@@ -636,20 +593,31 @@ body {
   align-items: center;
 }
 
-/* Table scroll container — horizontal only */
+/*
+  Table scroll container:
+  - overflow-x: auto  → horizontal scroll when table is wider than container
+  - overflow-y: auto  → vertical scroll for the tbody rows
+  - max-height        → caps the table height so thead sticks within this box
+  sticky position on <th> works relative to the nearest scrolling ancestor,
+  which is .table-scroll here.
+*/
 .table-scroll {
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 180px);
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Main data table */
 .data-table {
   width: 100%;
+  min-width: 900px;          /* ensures horizontal scroll kicks in before squishing */
   border-collapse: collapse;
   font-size: 12.5px;
   font-family: var(--font);
 }
 
-/* ── thead ── */
+/* ── thead base ── */
 .data-table thead tr th {
   background: var(--gray-50);
   color: var(--gray-500);
@@ -690,31 +658,6 @@ body {
   letter-spacing: -.01em;
 }
 
-/* ── Occupancy Rate row (thead section) ── */
-.data-table thead tr.occ-row th {
-  background: var(--purple-50);
-  color: var(--purple-700);
-  border-bottom: 1px solid var(--purple-200);
-  border-top: none;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 10px 14px;
-}
-
-.data-table thead tr.occ-row th:first-child {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: .07em;
-}
-
-.data-table thead tr.occ-row th.r {
-  text-align: right;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: -.01em;
-  font-weight: 700;
-}
-
 /* ── Grand Total row (thead section) ── */
 .data-table thead tr.total-row th {
   background: var(--blue-50);
@@ -724,6 +667,10 @@ body {
   font-size: 11px;
   font-weight: 700;
   padding: 10px 14px;
+  /* sticky: sits at top=0, col-header will sit below it */
+  position: sticky;
+  top: 0;
+  z-index: 3;
 }
 
 .data-table thead tr.total-row th:first-child {
@@ -740,11 +687,20 @@ body {
   letter-spacing: -.01em;
 }
 
-/* ── Column header sticky row ── */
+/*
+  ── Column header sticky row ──
+  Grand Total row height is ~39px (10px padding top + 10px bottom + ~19px text).
+  col-header must sit directly below it → top: 39px.
+  Adjust this value if you change total-row padding.
+*/
 .data-table thead tr.col-header th {
+  background: var(--gray-50);
+  color: var(--gray-500);
   position: sticky;
-  top: 0;
+  top: 39px;
   z-index: 2;
+  /* Ensure the border doesn't disappear behind the row above */
+  box-shadow: 0 1px 0 var(--border);
 }
 
 /* Table footer */
@@ -752,6 +708,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
   padding: 10px 16px;
   background: var(--gray-50);
   border-top: 1px solid var(--border);
@@ -770,18 +728,27 @@ body {
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    RESPONSIVE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-@media (max-width: 900px) {
+
+/* Laptop / mid-size screens: shrink sidebar, keep side-by-side */
+@media (max-width: 1100px) {
+  :root { --sidebar-w: 240px; }
+}
+
+@media (max-width: 860px) {
+  :root { --sidebar-w: 200px; }
+  .brand-sub { display: none; }
+  .drop-zone { padding: 16px 10px; }
+  .results-area { padding: 16px; }
+}
+
+/* Stack sidebar on top for very small screens (phones/small tablets) */
+@media (max-width: 600px) {
   html, body { overflow: auto; }
   .app-shell { flex-direction: column; height: auto; overflow: visible; }
   .sidebar { width: 100%; min-width: 0; height: auto; overflow: visible; }
-  .main-panel { height: auto; overflow: visible; }
+  .main-panel { height: auto; min-height: 100vh; overflow: visible; }
   .results-scroll { overflow: visible; }
-  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 560px) {
-  .topbar { padding: 0 16px; }
-  .results-area { padding: 16px; }
-  .topbar-sub { display: none; }
+  .table-scroll { max-height: none; }
   .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .results-area { padding: 12px; }
 }
