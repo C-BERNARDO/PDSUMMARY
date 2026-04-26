@@ -414,13 +414,6 @@ body {
 }
 .btn-ghost:hover { background: rgba(239,68,68,.1); color: #fca5a5; border-color: rgba(239,68,68,.25); }
 
-.btn-link {
-  background: transparent;
-  color: var(--sidebar-muted);
-  font-weight: 500;
-  font-size: 12px;
-}
-.btn-link:hover { color: var(--sidebar-text); }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    MAIN PANEL — scrollable right column
@@ -434,6 +427,12 @@ body {
   overflow: hidden;
   background: var(--bg);
 }
+
+/* Topbar */
+
+
+
+
 
 /* Tags */
 .tag {
@@ -457,8 +456,7 @@ body {
 .results-scroll {
   flex: 1;
   overflow-y: auto;
-  overflow-x: auto;
-  min-height: 0;
+  overflow-x: hidden;
 }
 
 .results-area {
@@ -504,7 +502,145 @@ body {
 .empty-desc strong { color: var(--blue-600); }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   KPI CARDS (Occupancy Rate + Grand Total)
+   REPORT WRAPPER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.report-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   REPORT HEADER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+
+
+
+
+
+
+
+/* Summary Table - horizontal */
+.summary-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.summary-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--gray-50);
+}
+
+.summary-card-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--gray-500);
+}
+
+.copy-btn {
+  padding: 5px 14px;
+  background: var(--blue-600);
+  color: #fff;
+  border: none;
+  border-radius: var(--r);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background .2s;
+  white-space: nowrap;
+}
+
+.copy-btn:hover { background: var(--blue-500); }
+
+.summary-scroll {
+  overflow-x: auto;
+}
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+
+/* Label row */
+.summary-table thead tr th.sum-th {
+  padding: 10px 18px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--gray-400);
+  text-align: right;
+  background: var(--gray-50);
+  border-right: 1px solid var(--border);
+}
+
+.summary-table thead tr th.sum-th:first-child { text-align: left; }
+.summary-table thead tr th.sum-th:last-child  { border-right: none; }
+
+/* Value row */
+.summary-table tbody tr td.sum-td {
+  padding: 12px 18px;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-900);
+  text-align: right;
+  border-right: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  letter-spacing: .01em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.summary-table tbody tr td.sum-td:first-child { text-align: left; }
+.summary-table tbody tr td.sum-td:last-child  { border-right: none; }
+
+/* Group separators between paired metrics */
+.summary-table thead tr th.sum-th:nth-child(3),
+.summary-table thead tr th.sum-th:nth-child(5),
+.summary-table thead tr th.sum-th:nth-child(7),
+.summary-table thead tr th.sum-th:nth-child(9),
+.summary-table thead tr th.sum-th:nth-child(11),
+.summary-table tbody  tr td.sum-td:nth-child(3),
+.summary-table tbody  tr td.sum-td:nth-child(5),
+.summary-table tbody  tr td.sum-td:nth-child(7),
+.summary-table tbody  tr td.sum-td:nth-child(9),
+.summary-table tbody  tr td.sum-td:nth-child(11) {
+  border-left: 2px solid var(--gray-200);
+}
+
+/* Pause Time column */
+.summary-table thead tr th.sum-pause { color: var(--amber-700); background: var(--amber-50); }
+.summary-table tbody tr  td.sum-pause { color: var(--amber-700); background: var(--amber-50); }
+
+/* Occupancy column */
+.summary-table thead tr th.sum-occ { color: var(--purple-600); background: var(--purple-50); border-left: 2px solid var(--purple-200); }
+.summary-table tbody  tr td.sum-occ { color: var(--purple-700); background: var(--purple-50); font-size: 16px; border-left: 2px solid var(--purple-200); }
+
+/* Hidden copy text - tab-separated for clipboard */
+.summary-copy-text {
+  display: none;
+}
+
+
+
+
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   KPI CARDS (legacy — kept for compatibility)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 .kpi-grid {
   display: grid;
@@ -555,9 +691,15 @@ body {
   margin-top: 2px;
 }
 
-/* Occupancy rate highlight */
-.kpi-card.occ-card .kpi-value {
-  color: var(--purple-700);
+.kpi-card.occ-card .kpi-value { color: var(--purple-700); }
+
+/* Collector results table wrapper (no card header) */
+.results-table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -568,7 +710,7 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-sm);
-  overflow: visible;
+  overflow: hidden;
 }
 
 .report-card-head {
@@ -593,31 +735,20 @@ body {
   align-items: center;
 }
 
-/*
-  Table scroll container:
-  - overflow-x: auto  → horizontal scroll when table is wider than container
-  - overflow-y: auto  → vertical scroll for the tbody rows
-  - max-height        → caps the table height so thead sticks within this box
-  sticky position on <th> works relative to the nearest scrolling ancestor,
-  which is .table-scroll here.
-*/
+/* Table scroll container — horizontal only */
 .table-scroll {
   overflow-x: auto;
-  overflow-y: auto;
-  max-height: calc(100vh - 180px);
-  -webkit-overflow-scrolling: touch;
 }
 
 /* Main data table */
 .data-table {
   width: 100%;
-  min-width: 900px;          /* ensures horizontal scroll kicks in before squishing */
   border-collapse: collapse;
   font-size: 12.5px;
   font-family: var(--font);
 }
 
-/* ── thead base ── */
+/* ── thead ── */
 .data-table thead tr th {
   background: var(--gray-50);
   color: var(--gray-500);
@@ -658,6 +789,31 @@ body {
   letter-spacing: -.01em;
 }
 
+/* ── Occupancy Rate row (thead section) ── */
+.data-table thead tr.occ-row th {
+  background: var(--purple-50);
+  color: var(--purple-700);
+  border-bottom: 1px solid var(--purple-200);
+  border-top: none;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 10px 14px;
+}
+
+.data-table thead tr.occ-row th:first-child {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+.data-table thead tr.occ-row th.r {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: -.01em;
+  font-weight: 700;
+}
+
 /* ── Grand Total row (thead section) ── */
 .data-table thead tr.total-row th {
   background: var(--blue-50);
@@ -667,10 +823,6 @@ body {
   font-size: 11px;
   font-weight: 700;
   padding: 10px 14px;
-  /* sticky: sits at top=0, col-header will sit below it */
-  position: sticky;
-  top: 0;
-  z-index: 3;
 }
 
 .data-table thead tr.total-row th:first-child {
@@ -687,20 +839,11 @@ body {
   letter-spacing: -.01em;
 }
 
-/*
-  ── Column header sticky row ──
-  Grand Total row height is ~39px (10px padding top + 10px bottom + ~19px text).
-  col-header must sit directly below it → top: 39px.
-  Adjust this value if you change total-row padding.
-*/
+/* ── Column header sticky row ── */
 .data-table thead tr.col-header th {
-  background: var(--gray-50);
-  color: var(--gray-500);
   position: sticky;
-  top: 39px;
+  top: 0;
   z-index: 2;
-  /* Ensure the border doesn't disappear behind the row above */
-  box-shadow: 0 1px 0 var(--border);
 }
 
 /* Table footer */
@@ -708,8 +851,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 6px;
   padding: 10px 16px;
   background: var(--gray-50);
   border-top: 1px solid var(--border);
@@ -728,27 +869,17 @@ body {
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    RESPONSIVE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-/* Laptop / mid-size screens: shrink sidebar, keep side-by-side */
-@media (max-width: 1100px) {
-  :root { --sidebar-w: 240px; }
-}
-
-@media (max-width: 860px) {
-  :root { --sidebar-w: 200px; }
-  .brand-sub { display: none; }
-  .drop-zone { padding: 16px 10px; }
-  .results-area { padding: 16px; }
-}
-
-/* Stack sidebar on top for very small screens (phones/small tablets) */
-@media (max-width: 600px) {
+@media (max-width: 900px) {
   html, body { overflow: auto; }
   .app-shell { flex-direction: column; height: auto; overflow: visible; }
   .sidebar { width: 100%; min-width: 0; height: auto; overflow: visible; }
-  .main-panel { height: auto; min-height: 100vh; overflow: visible; }
+  .main-panel { height: auto; overflow: visible; }
   .results-scroll { overflow: visible; }
-  .table-scroll { max-height: none; }
-  .kpi-grid { grid-template-columns: 1fr 1fr; }
-  .results-area { padding: 12px; }
+    }
+
+@media (max-width: 600px) {
 }
+
+@media (max-width: 560px) {
+    .results-area { padding: 16px; }
+  }
