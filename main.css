@@ -621,13 +621,13 @@ body {
   border-left: 2px solid var(--gray-200);
 }
 
-/* Pause Time column */
-.summary-table thead tr th.sum-pause { color: var(--amber-700); background: var(--amber-50); }
-.summary-table tbody tr  td.sum-pause { color: var(--amber-700); background: var(--amber-50); }
+/* Pause Time column - matches standard column styling */
+.summary-table thead tr th.sum-pause { color: var(--gray-400); background: var(--gray-50); }
+.summary-table tbody tr  td.sum-pause { color: var(--gray-900); background: transparent; }
 
-/* Occupancy column */
-.summary-table thead tr th.sum-occ { color: var(--purple-600); background: var(--purple-50); border-left: 2px solid var(--purple-200); }
-.summary-table tbody  tr td.sum-occ { color: var(--purple-700); background: var(--purple-50); font-size: 16px; border-left: 2px solid var(--purple-200); }
+/* Occupancy column - matches standard column styling */
+.summary-table thead tr th.sum-occ { color: var(--gray-400); background: var(--gray-50); border-left: 2px solid var(--gray-200); }
+.summary-table tbody  tr td.sum-occ { color: var(--gray-900); background: transparent; font-size: 15px; border-left: 2px solid var(--gray-200); }
 
 /* Hidden copy text - tab-separated for clipboard */
 .summary-copy-text {
